@@ -4,7 +4,8 @@ import time
 
 #===========================================================================================
 def plot_4panel(canvas, 
-                var, var_long_name, units, season, model, s1, s2, s3, s4, output_file_name):
+                var_dic,
+                var, var_long_name, units, season, model, s1, s2, s3, s4, output_file_name, option):
 #-------------------------------------------------------------------------------------------
   ## Input fields ---
   s = []
@@ -13,18 +14,16 @@ def plot_4panel(canvas,
   s.append(s3)
   s.append(s4)
 
-  ## Initialize VCS ---
-  #canvas = vcs.init(bg=1) # Plotting in background mode
-
-  ## Canvas setup ---
-  #canvas.drawlogooff()
+  ## Canvas --
+  canvas.clear()
+  canvas.drawlogooff() # Trun off old UVCDAT logo
 
   ## iso setup ---
   iso = canvas.getisofill(var_dic[var]['isofill'])
-  iso = setup_iso(var, iso, diff=False)
+  iso = setup_iso(var, iso, var_dic, diff=False)
 
   iso_diff = canvas.getisofill(var_dic[var]['isofill_diff'])
-  iso_diff = setup_iso(var, iso_diff, diff=True)
+  iso_diff = setup_iso(var, iso_diff, var_dic, diff=True)
 
   # Increase label text size ---
   my_template = vcs.createtemplate()
@@ -38,8 +37,12 @@ def plot_4panel(canvas,
   plot_title.halign = 'center'
   plot_title.valign = 'top'
   plot_title.color = 'black'
-  #plot_title.string = var_long_name.title() + ': ' + season.upper()
-  plot_title.string = var_long_name + ': ' + season.upper()
+
+  titadd = ''
+  if option == 2: titadd = ' dev from zonal mean'
+  if option == 3: titadd = ' dev from annual mean'
+
+  plot_title.string = var_long_name + ': ' + season.upper() + titadd
   canvas.plot(plot_title)
 
   plot_title.y = .935
@@ -57,8 +60,10 @@ def plot_4panel(canvas,
   M.legend.direction = 'horizontal' 
   
   # Border margin for entire canvas ---
-  M.margins.top = .14
-  M.margins.bottom = .09
+  #M.margins.top = .14
+  M.margins.top = .16
+  #M.margins.bottom = .09
+  M.margins.bottom = .11
   M.margins.left = .05  
   M.margins.right = .05  
   
@@ -105,11 +110,13 @@ def plot_4panel(canvas,
     if i == 0: 
       plot_title.string = model # multi-realization mean...?
       plot_title.x = .27
-      plot_title.y = .92
+      #plot_title.y = .92
+      plot_title.y = .90
     elif i == 1: 
       plot_title.string = var_dic[var]['obsname'] + ' (OBS)'
       plot_title.x = .73
-      plot_title.y = .92
+      #plot_title.y = .92
+      plot_title.y = .90
     elif i == 2: 
       plot_title.string = model+' - ' + var_dic[var]['obsname']
       plot_title.x = .27
@@ -124,24 +131,28 @@ def plot_4panel(canvas,
 
   # Units ---
   plot_title.string = '['+units+']'
-  plot_title.height = 18
+  plot_title.height = 17
 
   plot_title.x = .90
   plot_title.y = .49
   canvas.plot(plot_title) # next to top colorbar
 
   plot_title.x = .90
-  plot_title.y = .06
+  plot_title.y = .075
   canvas.plot(plot_title) # next to bottom colorbar
 
   # Logos ---
   # PCMDI
-  logo2 = vcs.utils.Logo('/work/lee1043/cdat/pmp/mean_climate_maps/lib/160915_PCMDI_logo-oblong_377x300px.png')
+  #logo2 = vcs.utils.Logo('/work/lee1043/cdat/pmp/mean_climate_maps/lib/160915_PCMDI_logo-oblong_377x300px.png')
+  logo2 = vcs.utils.Logo('/work/lee1043/cdat/pmp/mean_climate_maps/lib/PCMDILogo_200x65px_72dpi.png')
   #logo2.x = .06
-  logo2.x = .92
-  logo2.y = .93
-  logo2.width = logo2.source_width * .3
-  logo2.height = logo2.source_height * .3
+  logo2.x = .9
+  #logo2.y = .03
+  logo2.y = .96
+  #logo2.width = logo2.source_width * .3
+  #logo2.height = logo2.source_height * .3
+  logo2.width = logo2.source_width
+  logo2.height = logo2.source_height
   logo2.plot(canvas)
 
   # LLNL
@@ -151,6 +162,15 @@ def plot_4panel(canvas,
   #logo3.width = logo2.source_width * .6
   #logo3.height = logo2.source_height * .6
   #logo3.plot(canvas)
+
+  # New CDAT
+  logo_CDAT = vcs.utils.Logo('../lib/171101_doutriaux1_CDATLogo_1707x878px-300dpi.jpg')
+  logo_CDAT.x = .06
+  logo_CDAT.y = .018
+  logo_CDAT.width = logo_CDAT.source_width * .08
+  logo_CDAT.height = logo_CDAT.source_height * .08
+  logo_CDAT.plot(canvas)
+  
    
   #-------------------------------------------------
   # Drop output as image file (--- vector image?)
@@ -176,7 +196,7 @@ def setup_template(t):
   return(t)
 
 #===========================================================================================
-def setup_iso(var, iso, diff):
+def setup_iso(var, iso, var_dic, diff):
 #-------------------------------------------------------------------------------------------
   # Customize color ---
   if not diff: 
@@ -196,12 +216,20 @@ def setup_iso(var, iso, diff):
     elif var in ['ua-200',  'ua-850', 'va-200', 'va-850']:
       iso.levels = [-1.e20, -25, -20, -15, -10, -5, -2, 0, 2, 5, 10, 15, 20, 25, 1.e20]
     elif var == 'zg-500':
-      iso.levels = range(-180, 210, 30)
+      iso.levels = range(-120, 140, 20)
+      iso.levels.insert(0, -1.e20)
+      iso.levels.append(1.e20)
+    elif var == 'ta-850':
+      iso.levels = range(-6, 8, 2)
+      iso.levels.insert(0, -1.e20)
+      iso.levels.append(1.e20)
+    elif var in ['ua-850', 'va-850', 'va-200', 'psl']:
+      iso.levels = range(-10, 12, 2)
       iso.levels.insert(0, -1.e20)
       iso.levels.append(1.e20)
   else:
     if var == 'rltcre':
-      iso.levels = range(0,100,10)
+      iso.levels = range(-25,30,5)  #range(0,100,10)
       iso.levels.insert(0, -1.e20)
       iso.levels.append(1.e20)
     if var == 'ta-850':
