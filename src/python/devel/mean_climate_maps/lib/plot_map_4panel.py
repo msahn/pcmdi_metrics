@@ -60,9 +60,7 @@ def plot_4panel(canvas,
   M.legend.direction = 'horizontal' 
   
   # Border margin for entire canvas ---
-  #M.margins.top = .14
   M.margins.top = .16
-  #M.margins.bottom = .09
   M.margins.bottom = .11
   M.margins.left = .05  
   M.margins.right = .05  
@@ -110,12 +108,10 @@ def plot_4panel(canvas,
     if i == 0: 
       plot_title.string = model # multi-realization mean...?
       plot_title.x = .27
-      #plot_title.y = .92
       plot_title.y = .90
     elif i == 1: 
       plot_title.string = var_dic[var]['obsname'] + ' (OBS)'
       plot_title.x = .73
-      #plot_title.y = .92
       plot_title.y = .90
     elif i == 2: 
       plot_title.string = model+' - ' + var_dic[var]['obsname']
@@ -131,7 +127,7 @@ def plot_4panel(canvas,
 
   # Units ---
   plot_title.string = '['+units+']'
-  plot_title.height = 17
+  plot_title.height = 14
 
   plot_title.x = .5
   plot_title.y = .49
@@ -144,29 +140,18 @@ def plot_4panel(canvas,
   # Logos ---
   # PCMDI
   logo2 = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png')
-  logo2.x = .9
+  logo2.x = .1
   logo2.y = .04
-  #logo2.y = .96
-  #logo2.width = logo2.source_width * .3
-  #logo2.height = logo2.source_height * .3
   logo2.width = logo2.source_width
   logo2.height = logo2.source_height
   logo2.plot(canvas)
 
-  # LLNL
-  #logo3 = vcs.utils.Logo('/work/lee1043/cdat/pmp/mean_climate_maps/lib/LLNL-logo.png')
-  #logo3.x = .11
-  #logo3.y = .03
-  #logo3.width = logo2.source_width * .6
-  #logo3.height = logo2.source_height * .6
-  #logo3.plot(canvas)
-
   # New CDAT
   logo_CDAT = vcs.utils.Logo('../../../../../share/pcmdi/CDATLogo_200x70px_72dpi.png')
-  logo_CDAT.x = .06
-  logo_CDAT.y = .018
-  logo_CDAT.width = logo_CDAT.source_width
-  logo_CDAT.height = logo_CDAT.source_height
+  logo_CDAT.x = .9
+  logo_CDAT.y = .04
+  logo_CDAT.width = logo_CDAT.source_width *.8
+  logo_CDAT.height = logo_CDAT.source_height *.8
   logo_CDAT.plot(canvas)
    
   #-------------------------------------------------
