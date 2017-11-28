@@ -91,7 +91,7 @@ plots_outdir = parameter.outdir
 #            "share",
 #            "pmp",
 #            "obs_info_dictionary.json"))
-fjson = open('/export_backup/lee1043/git/pcmdi_metrics_master/pcmdi_metrics/doc/obs_info_dictionary.json') ## FOR TEST -jwlee
+fjson = open('../../../../../doc/obs_info_dictionary.json') ## FOR TEST -jwlee
 obs_dic = json.loads(fjson.read())
 fjson.close()
 
