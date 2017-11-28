@@ -101,7 +101,7 @@ execfile('../lib/plot_map_4panel.py')
 opathin = basedir + 'processed_data/obs/atm/mo/VAR/OBS/ac/VAR_OBS_000001-000012_ac.nc'
 
 # MOD path
-mpathin = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims_historical/global/cmip5.MOD.historical.r1i1p1.mo.Amon.VAR.ver-1.1980-2005.interpolated.linear.2.5x2.5.global.AC.nc'
+mpathin = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims_EXP/global/cmip5.MOD.EXP.r1i1p1.mo.Amon.VAR.ver-1.1980-2005.interpolated.linear.2.5x2.5.global.AC.nc'
 
 #----------------------------------------------------------------------------
 # Log file
@@ -402,6 +402,7 @@ for var in vars:
 
   mpatht = string.replace(mpathin,'MOD','*')
   mpatht = string.replace(mpatht,'VAR',var)
+  mpatht = string.replace(mpatht,'EXP',exp)
 
   lst = os.popen('ls ' + mpatht).readlines()
   for l in lst:
@@ -435,7 +436,7 @@ for var in vars:
     for mod in mods:
 
       mpatht = string.replace(mpathin,'MOD',mod)
-      mpatht = string.replace(mpatht,'VAR',var)
+      #mpatht = string.replace(mpatht,'VAR',var)
 
       fm = cdms2.open(mpatht)
 
