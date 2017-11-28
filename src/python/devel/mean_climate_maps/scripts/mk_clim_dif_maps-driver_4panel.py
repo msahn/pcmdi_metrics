@@ -106,7 +106,7 @@ if exp == 'historical':
   mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198001-200512-clim.nc'
 elif exp == 'amip':
   mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198101-200512-clim.nc'
-elif exp == 'picontrol'
+elif exp == 'picontrol':
   mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_01-12-clim.nc'
 
 print mpathin
