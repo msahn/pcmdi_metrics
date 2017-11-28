@@ -9,6 +9,33 @@ import time
 import EzTemplate
 import collections
 
+from pcmdi_metrics.pcmdi.pmp_parser import PMPParser
+
+P = PMPParser()
+
+P.add_argument("-e", "--experiment",
+                   type=str,
+                   dest="experiment",
+                   default="historical",
+                   help="historical / amip / picontrol")
+P.add_argument("-o", "--option",
+                   type=int,
+                   dest="option",
+                   default=1,
+                   help="1: mean clim, 2: remove zonal mean, 3: remove annual mean")
+P.add_argument("--outdir",
+                   type=str,
+                   dest="outdir",
+                   default="./test",
+                   help="output directory path")
+P.add_argument("-d", "--debug",
+                   type=bool,
+                   dest="debug",
+                   default=False,
+                   help="debug")
+
+parameter = P.get_parameter()
+
 #----------------------------------------------------------------------------
 def remove_zonal_mean(d):
   d_zm = cdutil.averager(d,axis='x')
@@ -21,14 +48,13 @@ def remove_annual_mean(ds, d):
   ds = MV2.subtract(ds, d_am)
   return ds
 #----------------------------------------------------------------------------
-debug = True
-#debug = False
+debug = parameter.debug
 
 #OgridAsCommon = True
 OgridAsCommon = False # In case if OBS has higher resolution than models AND all models already have been processed to have same grid
 
 #----------------------------------------------------------------------------
-option = 1
+option = parameter.option
 
 if option == 1:
   RemoveZonalMean = False
@@ -46,9 +72,7 @@ elif option == 3:
 #----------------------------------------------------------------------------
 
 era = 'cmip5'
-exp = 'historical'
-#exp = 'amip'
-#exp = 'picontrol'
+exp = parameter.experiment
 
 m = 'crunchy'
 
@@ -58,9 +82,7 @@ if m == 'oceanonly':
 if m == 'crunchy':
  basedir = '/export_backup/gleckler1/'
 
-#plots_outdir = '/work/gleckler1/processed_data/clim_plots/'
-plots_outdir = '/work/lee1043/cdat/pmp/clim_plots/' ## FOR TEST -jwlee
-plots_outdir = './test'
+plots_outdir = parameter.outdir 
 
 # Load the obs dictionary
 #fjson = open(
