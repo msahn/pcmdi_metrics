@@ -80,7 +80,8 @@ if m == 'oceanonly':
  basedir = '/work/gleckler1/'
 
 if m == 'crunchy':
- basedir = '/export_backup/gleckler1/'
+ #basedir = '/export_backup/gleckler1'
+ basedir = '/work_oceanonly/gleckler1'
 
 plots_outdir = parameter.outdir 
 
@@ -98,16 +99,16 @@ fjson.close()
 execfile('../lib/plot_map_4panel.py')
 
 # OBS path
-opathin = basedir + 'processed_data/obs/atm/mo/VAR/OBS/ac/VAR_OBS_000001-000012_ac.nc'
+opathin = os.path.join(basedir, 'processed_data/obs/atm/mo/VAR/OBS/ac/VAR_OBS_000001-000012_ac.nc')
 
 # MOD path
 #mpathin = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims_EXP/global/cmip5.MOD.EXP.r1i1p1.mo.Amon.VAR.ver-1.1980-2005.interpolated.linear.2.5x2.5.global.AC.nc'
 if exp == 'historical':
-  mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198001-200512-clim.nc'
+  mpathin = os.path.join(basedir, 'processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198001-200512-clim.nc')
 elif exp == 'amip':
-  mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198101-200512-clim.nc'
+  mpathin = os.path.join(basedir, 'processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198101-200512-clim.nc')
 elif exp == 'picontrol':
-  mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_01-12-clim.nc'
+  mpathin = os.path.join(basedir, 'processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_01-12-clim.nc')
 
 print mpathin
 
