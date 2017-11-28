@@ -50,8 +50,8 @@ def remove_annual_mean(ds, d):
 #----------------------------------------------------------------------------
 debug = parameter.debug
 
-#OgridAsCommon = True
-OgridAsCommon = False # In case if OBS has higher resolution than models AND all models already have been processed to have same grid
+OgridAsCommon = True
+#OgridAsCommon = False # In case if OBS has higher resolution than models AND all models already have been processed to have same grid
 
 #----------------------------------------------------------------------------
 option = parameter.option
@@ -101,7 +101,15 @@ execfile('../lib/plot_map_4panel.py')
 opathin = basedir + 'processed_data/obs/atm/mo/VAR/OBS/ac/VAR_OBS_000001-000012_ac.nc'
 
 # MOD path
-mpathin = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims_EXP/global/cmip5.MOD.EXP.r1i1p1.mo.Amon.VAR.ver-1.1980-2005.interpolated.linear.2.5x2.5.global.AC.nc'
+#mpathin = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims_EXP/global/cmip5.MOD.EXP.r1i1p1.mo.Amon.VAR.ver-1.1980-2005.interpolated.linear.2.5x2.5.global.AC.nc'
+if exp == 'historical':
+  mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198001-200512-clim.nc'
+elif exp == 'amip':
+  mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198101-200512-clim.nc'
+else:  ## TEMPORARY
+  mpathin = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims_EXP/global/cmip5.MOD.EXP.r1i1p1.mo.Amon.VAR.ver-1.1980-2005.interpolated.linear.2.5x2.5.global.AC.nc'
+
+print mpathin
 
 #----------------------------------------------------------------------------
 # Log file
@@ -321,13 +329,9 @@ canvas = vcs.init(geometry=(1100,850),bg=1)
 # Load Ken's color maps and iso levels
 canvas.scriptrun('../lib/initial.attributes_sperber_081617.json')
 
-# Logo for canvas
-# Logos ---
-# PCMDI
-logo1 = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png')
-
-# New CDAT
-logo2 = vcs.utils.Logo('../../../../../share/pcmdi/CDATLogo_200x70px_72dpi.png')
+# Logos for canvas
+logo1 = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png') # PCMDI
+logo2 = vcs.utils.Logo('../../../../../share/pcmdi/CDATLogo_200x70px_72dpi.png') # New CDAT
 
 # Load Karl's color maps
 execfile('../lib/taylor_colormaps_stretch.py')
@@ -406,7 +410,7 @@ for var in vars:
 
   lst = os.popen('ls ' + mpatht).readlines()
   for l in lst:
-    mod = string.split(l,'.')[1]
+    mod = string.split(l,'/')[-1].split('_')[1]
     if mod not in mods: mods.append(mod)
 
   if debug:
