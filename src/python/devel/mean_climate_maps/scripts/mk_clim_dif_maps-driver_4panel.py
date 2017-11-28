@@ -106,11 +106,10 @@ opathin = os.path.join(basedir, 'processed_data/obs/atm/mo/VAR/OBS/ac/VAR_OBS_00
 if exp in [ 'historical', 'amip']:
   syear = 1981
   eyear = 2005
-  mpathin = os.path.join(basedir, 'processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198101-200512-clim.nc')
 elif exp == 'picontrol':
   syear = ''
   eyear = ''
-  mpathin = os.path.join(basedir, 'processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_01-12-clim.nc')
+mpathin = os.path.join(basedir, 'processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_{}01-{}12-clim.nc'.format(syear,eyear))
 
 print mpathin
 
