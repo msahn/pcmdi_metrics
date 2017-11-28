@@ -321,6 +321,14 @@ canvas = vcs.init(geometry=(1100,850),bg=1)
 # Load Ken's color maps and iso levels
 canvas.scriptrun('../lib/initial.attributes_sperber_081617.json')
 
+# Logo for canvas
+# Logos ---
+# PCMDI
+logo1 = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png')
+
+# New CDAT
+logo2 = vcs.utils.Logo('../../../../../share/pcmdi/CDATLogo_200x70px_72dpi.png')
+
 # Load Karl's color maps
 execfile('../lib/taylor_colormaps_stretch.py')
 
@@ -519,7 +527,7 @@ for var in vars:
 
       time1 = time.time() # Time checker
 
-      plot_4panel(canvas,
+      plot_4panel(canvas, logo1, logo2,
                   var_dic,
                   var, var_long_name, units, season, 
                   mod, 

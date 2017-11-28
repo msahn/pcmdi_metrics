@@ -3,7 +3,7 @@ import vcs
 import time
 
 #===========================================================================================
-def plot_4panel(canvas, 
+def plot_4panel(canvas, logo1, logo2,
                 var_dic,
                 var, var_long_name, units, season, model, s1, s2, s3, s4, output_file_name, option):
 #-------------------------------------------------------------------------------------------
@@ -139,20 +139,20 @@ def plot_4panel(canvas,
 
   # Logos ---
   # PCMDI
-  logo = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png')
-  logo.x = .1
-  logo.y = .04
-  logo.width = logo.source_width
-  logo.height = logo.source_height
-  logo.plot(canvas)
+  #logo1 = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png')
+  logo1.x = .1
+  logo1.y = .04
+  logo1.width = logo1.source_width
+  logo1.height = logo1.source_height
+  logo1.plot(canvas)
 
   # New CDAT
-  logo = vcs.utils.Logo('../../../../../share/pcmdi/CDATLogo_200x70px_72dpi.png')
-  logo.x = .9
-  logo.y = .04
-  logo.width = logo.source_width *.8
-  logo.height = logo.source_height *.8
-  logo.plot(canvas)
+  #logo2 = vcs.utils.Logo('../../../../../share/pcmdi/CDATLogo_200x70px_72dpi.png')
+  logo2.x = .9
+  logo2.y = .04
+  logo2.width = logo2.source_width *.8
+  logo2.height = logo2.source_height *.8
+  logo2.plot(canvas)
    
   #-------------------------------------------------
   # Drop output as image file (--- vector image?)
@@ -164,7 +164,7 @@ def plot_4panel(canvas,
   canvas.clear()
   canvas.removeobject(my_template)
   canvas.removeobject(plot_title)
-  del(logo)
+  #del(logo)
 
   for t in templates:
       canvas.removeobject(t)
