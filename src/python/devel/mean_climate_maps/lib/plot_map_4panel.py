@@ -139,20 +139,20 @@ def plot_4panel(canvas,
 
   # Logos ---
   # PCMDI
-  logo_PCMDI = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png')
-  logo_PCMDI.x = .1
-  logo_PCMDI.y = .04
-  logo_PCMDI.width = logo_PCMDI.source_width
-  logo_PCMDI.height = logo_PCMDI.source_height
-  logo_PCMDI.plot(canvas)
+  logo = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png')
+  logo.x = .1
+  logo.y = .04
+  logo.width = logo.source_width
+  logo.height = logo.source_height
+  logo.plot(canvas)
 
   # New CDAT
-  logo_CDAT = vcs.utils.Logo('../../../../../share/pcmdi/CDATLogo_200x70px_72dpi.png')
-  logo_CDAT.x = .9
-  logo_CDAT.y = .04
-  logo_CDAT.width = logo_CDAT.source_width *.8
-  logo_CDAT.height = logo_CDAT.source_height *.8
-  logo_CDAT.plot(canvas)
+  logo = vcs.utils.Logo('../../../../../share/pcmdi/CDATLogo_200x70px_72dpi.png')
+  logo.x = .9
+  logo.y = .04
+  logo.width = logo.source_width *.8
+  logo.height = logo.source_height *.8
+  logo.plot(canvas)
    
   #-------------------------------------------------
   # Drop output as image file (--- vector image?)
@@ -164,8 +164,7 @@ def plot_4panel(canvas,
   canvas.clear()
   canvas.removeobject(my_template)
   canvas.removeobject(plot_title)
-  del(logo_PCMDI)
-  del(logo_CDAT)
+  del(logo)
 
   for t in templates:
       canvas.removeobject(t)
