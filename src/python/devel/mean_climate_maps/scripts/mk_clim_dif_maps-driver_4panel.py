@@ -436,7 +436,8 @@ for var in vars:
     for mod in mods:
 
       mpatht = string.replace(mpathin,'MOD',mod)
-      #mpatht = string.replace(mpatht,'VAR',var)
+      mpatht = string.replace(mpatht,'VAR',var)
+      mpatht = string.replace(mpatht,'EXP',exp)
 
       fm = cdms2.open(mpatht)
 
