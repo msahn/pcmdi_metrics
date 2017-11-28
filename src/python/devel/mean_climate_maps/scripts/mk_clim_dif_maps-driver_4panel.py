@@ -1,5 +1,5 @@
 import vcs
-import cdms2, cdutil
+import cdms2, cdutil, genutil
 import MV2
 import sys,os
 import json
@@ -9,14 +9,46 @@ import time
 import EzTemplate
 import collections
 
-#debug = True
-debug = False
+#----------------------------------------------------------------------------
+def remove_zonal_mean(d):
+  d_zm = cdutil.averager(d,axis='x')
+  d,d_zm = genutil.grower(d,d_zm) # Matching dimension for subtraction
+  d = MV2.subtract(d, d_zm)  
+  return d
+
+def remove_annual_mean(ds, d):
+  d_am = cdutil.YEAR.climatology(d)
+  ds = MV2.subtract(ds, d_am)
+  return ds
+#----------------------------------------------------------------------------
+debug = True
+#debug = False
 
 #OgridAsCommon = True
 OgridAsCommon = False # In case if OBS has higher resolution than models AND all models already have been processed to have same grid
 
+#----------------------------------------------------------------------------
+option = 1
+
+if option == 1:
+  RemoveZonalMean = False
+  RemoveAnnualMean = False
+  odir = 'clim'
+elif option == 2:
+  RemoveZonalMean = True
+  RemoveAnnualMean = False
+  odir = 'climmzm'
+elif option == 3:
+  RemoveZonalMean = False
+  RemoveAnnualMean = True
+  odir = 'climmtm'
+
+#----------------------------------------------------------------------------
+
 era = 'cmip5'
 exp = 'historical'
+#exp = 'amip'
+#exp = 'picontrol'
 
 m = 'crunchy'
 
@@ -28,6 +60,7 @@ if m == 'crunchy':
 
 #plots_outdir = '/work/gleckler1/processed_data/clim_plots/'
 plots_outdir = '/work/lee1043/cdat/pmp/clim_plots/' ## FOR TEST -jwlee
+plots_outdir = './test'
 
 # Load the obs dictionary
 #fjson = open(
@@ -36,7 +69,7 @@ plots_outdir = '/work/lee1043/cdat/pmp/clim_plots/' ## FOR TEST -jwlee
 #            "share",
 #            "pmp",
 #            "obs_info_dictionary.json"))
-fjson = open('/export_backup/lee1043/git/pcmdi_metrics/doc/obs_info_dictionary.json') ## FOR TEST -jwlee
+fjson = open('/export_backup/lee1043/git/pcmdi_metrics_master/pcmdi_metrics/doc/obs_info_dictionary.json') ## FOR TEST -jwlee
 obs_dic = json.loads(fjson.read())
 fjson.close()
 
@@ -48,6 +81,7 @@ opathin = basedir + 'processed_data/obs/atm/mo/VAR/OBS/ac/VAR_OBS_000001-000012_
 # MOD path
 mpathin = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims_historical/global/cmip5.MOD.historical.r1i1p1.mo.Amon.VAR.ver-1.1980-2005.interpolated.linear.2.5x2.5.global.AC.nc'
 
+#----------------------------------------------------------------------------
 # Log file
 import datetime
 now = datetime.datetime.now()
@@ -63,7 +97,7 @@ subs = ['',era,exp]
 for sub in subs: 
   po = po + '/' + sub
   try:
-    os.mkdir(po)
+    os.makedirs(po)
   except:
     pass
 
@@ -86,6 +120,7 @@ var_dic = {
      'colormap': 'band_12', # 'default_1', 'dvbluered'
      'colormap_diff': 'band_6', # 'bl_to_darkred'
      'isofill': 'AMIP_pr',
+     'isofill_mzm': 'pr_anom1_bw1', 
      'isofill_diff': 'pr_anom1_bw1', ## BUT, HARD-CODED!!
      },
   'prw': {
@@ -96,6 +131,7 @@ var_dic = {
      'colormap': 'band_12', # 'default_1', 'dvbluered'
      'colormap_diff': 'band_6', # 'bl_to_darkred'
      'isofill': 'AMIP_prw',
+     'isofill_mzm': 'pr_anom1_bw1',
      'isofill_diff': 'pr_anom1_bw1', ## BUT, HARD-CODED!!
      },
   'psl': {
@@ -106,6 +142,7 @@ var_dic = {
      'colormap': 'default_1', # 'dvbluered'
      'colormap_diff': 'bl_to_darkred',
      'isofill': 'AMIP_psl',
+     'isofill_mzm': 'AMIP_psldif',
      'isofill_diff': 'AMIP_psldif',
      },
   'rltcre': {
@@ -116,6 +153,7 @@ var_dic = {
      'colormap': 'default_1', # 'dvbluered'
      'colormap_diff': 'bl_to_darkred',
      'isofill': 'rlt_clim', ## BUT, HARD-CODED!!
+     'isofill_mzm': 'AMIP_rlta',
      'isofill_diff': 'AMIP_rlta',
      },
   'rlut': {
@@ -126,6 +164,7 @@ var_dic = {
      'colormap': 'default_1', # 'dvbluered'
      'colormap_diff': 'bl_to_darkred',
      'isofill': 'AMIP_rlt',
+     'isofill_mzm': 'AMIP_rlta',
      'isofill_diff': 'AMIP_rlta',
      },
   'rstcre': {
@@ -136,6 +175,7 @@ var_dic = {
      'colormap': 'default_1', # 'dvbluered'
      'colormap_diff': 'bl_to_darkred',
      'isofill': 'AMIP_rls',
+     'isofill_mzm': 'AMIP_rlta',
      'isofill_diff': 'AMIP_rlta',
      },
   'tas': {
@@ -146,6 +186,7 @@ var_dic = {
      'colormap': 'default_1', # 'band_8', 'default_1', 'dvbluered'
      'colormap_diff': 'band_6', #'bl_to_darkred',
      'isofill': 'AMIP_tas',
+     'isofill_mzm': 'AMIP_tasvar',
      'isofill_diff': 'AMIP_tasvar', ## BUT, HARD-CODED!!
      },
   'ta-200': {
@@ -156,6 +197,7 @@ var_dic = {
      'colormap': 'default_1', # 'band_8', 'default_1', 'dvbluered'
      'colormap_diff': 'band_6', #'bl_to_darkred',
      'isofill': 'AMIP_ta200',
+     'isofill_mzm': 'AMIP_ta200var',
      'isofill_diff': 'AMIP_ta200var', ## BUT, HARD-CODED!!
      'level': 20000 # Pa
      },
@@ -167,6 +209,7 @@ var_dic = {
      'colormap': 'default_1', # 'band_8', 'default_1', 'dvbluered'
      'colormap_diff': 'band_6', #'bl_to_darkred',
      'isofill': 'AMIP_ta850', ## BUT, HARD-CODED (because of bug in given levels: two 1e20s at the end..)
+     'isofill_mzm': 'AMIP_ta850var',
      'isofill_diff': 'AMIP_ta850var', ## BUT, HARD-CODED!!
      'level': 85000 # Pa
      },
@@ -178,6 +221,7 @@ var_dic = {
      'colormap': 'default_1', # 'band_8', 'default_1', 'dvbluered'
      'colormap_diff': 'band_6', #'bl_to_darkred',
      'isofill': 'AMIP_u200',
+     'isofill_mzm': 'AMIP_u200var',
      'isofill_diff': 'AMIP_u200var', ## BUT, HARD-CODED!!
      'level': 20000 # Pa
      },
@@ -189,6 +233,7 @@ var_dic = {
      'colormap': 'default_1', # 'band_8', 'default_1', 'dvbluered'
      'colormap_diff': 'band_6', #'bl_to_darkred',
      'isofill': 'AMIP_u850', ## BUT, HARD-CODED (because of bug in given levels: two 1e20s at the end..)
+     'isofill_mzm': 'AMIP_u850var',
      'isofill_diff': 'AMIP_u200var', ## BUT, HARD-CODED!!
      'level': 85000 # Pa
      },
@@ -200,6 +245,7 @@ var_dic = {
      'colormap': 'default_1', # 'band_8', 'default_1', 'dvbluered'
      'colormap_diff': 'band_6', #'bl_to_darkred',
      'isofill': 'AMIP_v200',
+     'isofill_mzm': 'AMIP_v200var',
      'isofill_diff': 'AMIP_v200var', ## BUT, HARD-CODED!!
      'level': 20000 # Pa
      },
@@ -211,6 +257,7 @@ var_dic = {
      'colormap': 'default_1', # 'band_8', 'default_1', 'dvbluered'
      'colormap_diff': 'band_6', #'bl_to_darkred',
      'isofill': 'AMIP_v850', ## BUT, HARD-CODED (because of bug in given levels: two 1e20s at the end..)
+     'isofill_mzm': 'AMIP_v850var',
      'isofill_diff': 'AMIP_v200var', ## BUT, HARD-CODED!!
      'level': 85000 # Pa
      },
@@ -222,6 +269,7 @@ var_dic = {
      'colormap': 'default_1', # 'band_8', 'default_1', 'dvbluered'
      'colormap_diff': 'band_6', #'bl_to_darkred',
      'isofill': 'AMIP_zg500',
+     'isofill_mzm': 'AMIP_zg500var',
      'isofill_diff': 'AMIP_zg500var', ## BUT, HARD-CODED!!?
      'level': 50000 # Pa
      },
@@ -229,29 +277,18 @@ var_dic = {
 
 vars = var_dic.keys()
 
-#vars = ['pr','rlut','tas','rt']
-#vars = ['tas']
-#vars = ['rlut']
-#vars = ['prw']
-#vars = ['psl']
-#vars = ['rltcre']
-#vars = ['rstcre']
-#vars = ['ta-200']
-#vars = ['ta-850']
-#vars = ['ua-200']
-#vars = ['ua-850']
-#vars = ['va-200', 'va-850']
-vars = ['zg-500']
+#vars = ['pr']
+#vars = ['prw','psl']
+#vars = ['rlut', 'rltcre', 'rstcre']
+#vars = ['tas', 'ta-200', 'ta-850']
+#vars = ['ua-200', 'ua-850', 'va-200', 'va-850']
+#vars = ['zg-500']
 
 seasons = ['djf', 'mam', 'jja', 'son']
 
 if debug:
-  #vars = ['pr']
-  #vars = ['tas']
-  #vars = ['pr', 'tas']
-  #vars = ['rlt']
+  vars = ['pr']
   seasons = ['djf']
-  #seasons = ['djf', 'mam', 'jja', 'son']
 
 ##################################################################################
 # Open VCS canvas and load color maps
@@ -271,6 +308,11 @@ execfile('../lib/taylor_colormaps_stretch.py')
 print 'Loop start'
 for var in vars:
   var_long_name = var_dic[var]['var_long_name']
+
+  if RemoveZonalMean is True: var_long_name = var_long_name + ""
+
+  if RemoveZonalMean or RemoveAnnualMean:
+    var_dic[var]['isofill'] = var_dic[var]['isofill_mzm']
 
   #==============================================================================
   # Observation
@@ -292,6 +334,8 @@ for var in vars:
   else:
     do = fo(var, longitude=(0,360), latitude=(-90,90))
 
+  cdutil.setTimeBoundsMonthly(do)
+
   fo.close()
 
   # Missing data maskout (temporary, for special case: prw, RSS, no data over land nor ice)
@@ -302,16 +346,23 @@ for var in vars:
 
   ogrid = do.getGrid()
 
+  # Adjust Units
+  if var_dic[var]['units_adjust'][0]:
+    operator = var_dic[var]['units_adjust'][1]
+    number = var_dic[var]['units_adjust'][2]
+    do = getattr(MV2,operator)(do, number)
+
   # Seasonal climatology of observation
   obs = {}
   for season in seasons:
+
     obs[season] = pcmdi_metrics.pcmdi.seasonal_mean.compute(do,season)
 
-    # Adjust Units
-    if var_dic[var]['units_adjust'][0]:
-      operator = var_dic[var]['units_adjust'][1]
-      number = var_dic[var]['units_adjust'][2]
-      obs[season] = getattr(MV2,operator)(obs[season], number)
+    if RemoveZonalMean:
+      obs[season] = remove_zonal_mean(obs[season])
+
+    if RemoveAnnualMean:
+      obs[season] = remove_annual_mean(obs[season], do)
 
   #==============================================================================
   # Models
@@ -329,6 +380,7 @@ for var in vars:
 
   if debug:
     mods = mods[0:3] # FOR TEST -jwlee
+    mods = mods[0:1] # FOR TEST -jwlee
 
   # Dictionary for save fields
   fld = {} # Model's climatology field
@@ -362,6 +414,12 @@ for var in vars:
       else:
         dm = fm(var, longitude=(0,360), latitude=(-90,90))
 
+      # Adjust units
+      if var_dic[var]['units_adjust'][0]:
+        dm = getattr(MV2,operator)(dm, number)
+
+      cdutil.setTimeBoundsMonthly(dm)
+
       fm.close()
 
       #print 'calc', var, season, mod
@@ -390,9 +448,13 @@ for var in vars:
       # Seasonal climatology
       fld[mod][season] = pcmdi_metrics.pcmdi.seasonal_mean.compute(dm,season)
 
-      # Adjust units
-      if var_dic[var]['units_adjust'][0]:
-        fld[mod][season] = getattr(MV2,operator)(fld[mod][season], number)
+      # Zonal Mean Remove?
+      if RemoveZonalMean:
+        fld[mod][season] = remove_zonal_mean(fld[mod][season])
+
+      # Annual Mean Remove?
+      if RemoveAnnualMean:
+        fld[mod][season] = remove_annual_mean(fld[mod][season], dm)
 
       # Regrid to observational grid
       fld_regrid = fld[mod][season].regrid(refgrid, regridTool='regrid2', mkCyclic=True)
@@ -420,9 +482,10 @@ for var in vars:
   #------------------------------------------------------------------------------
   # Create 4 panel plots: model, obs, model-obs, mmm-obs
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  pout = plots_outdir + '/' + era + '/' + exp + '/' + '/clim/' + var
+  pout = plots_outdir + '/' + era + '/' + exp + '/' + odir + '/' + var
+
   try:
-    os.mkdir(pout)
+    os.makedirs(pout)
   except:
     pass
 
@@ -435,11 +498,12 @@ for var in vars:
       time1 = time.time() # Time checker
 
       plot_4panel(canvas,
+                  var_dic,
                   var, var_long_name, units, season, 
                   mod, 
                   fld[mod][season], obs[season], 
                   dif[mod][season], mmm_dif[season], 
-                  output_file_name)
+                  output_file_name,option)
 
       time2 = time.time() # Time checker
       timec = time2 - time1

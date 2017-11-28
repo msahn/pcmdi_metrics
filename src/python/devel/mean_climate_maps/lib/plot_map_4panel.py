@@ -133,22 +133,20 @@ def plot_4panel(canvas,
   plot_title.string = '['+units+']'
   plot_title.height = 17
 
-  plot_title.x = .90
+  plot_title.x = .5
   plot_title.y = .49
   canvas.plot(plot_title) # next to top colorbar
 
-  plot_title.x = .90
+  plot_title.x = .5
   plot_title.y = .075
   canvas.plot(plot_title) # next to bottom colorbar
 
   # Logos ---
   # PCMDI
-  #logo2 = vcs.utils.Logo('/work/lee1043/cdat/pmp/mean_climate_maps/lib/160915_PCMDI_logo-oblong_377x300px.png')
-  logo2 = vcs.utils.Logo('/work/lee1043/cdat/pmp/mean_climate_maps/lib/PCMDILogo_200x65px_72dpi.png')
-  #logo2.x = .06
+  logo2 = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png')
   logo2.x = .9
-  #logo2.y = .03
-  logo2.y = .96
+  logo2.y = .04
+  #logo2.y = .96
   #logo2.width = logo2.source_width * .3
   #logo2.height = logo2.source_height * .3
   logo2.width = logo2.source_width
@@ -164,13 +162,12 @@ def plot_4panel(canvas,
   #logo3.plot(canvas)
 
   # New CDAT
-  logo_CDAT = vcs.utils.Logo('../lib/171101_doutriaux1_CDATLogo_1707x878px-300dpi.jpg')
+  logo_CDAT = vcs.utils.Logo('../../../../../share/pcmdi/CDATLogo_200x70px_72dpi.png')
   logo_CDAT.x = .06
   logo_CDAT.y = .018
-  logo_CDAT.width = logo_CDAT.source_width * .08
-  logo_CDAT.height = logo_CDAT.source_height * .08
+  logo_CDAT.width = logo_CDAT.source_width
+  logo_CDAT.height = logo_CDAT.source_height
   logo_CDAT.plot(canvas)
-  
    
   #-------------------------------------------------
   # Drop output as image file (--- vector image?)
