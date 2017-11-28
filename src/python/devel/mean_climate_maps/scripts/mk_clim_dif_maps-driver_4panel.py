@@ -74,14 +74,7 @@ elif option == 3:
 era = 'cmip5'
 exp = parameter.experiment
 
-m = 'crunchy'
-
-if m == 'oceanonly':
- basedir = '/work/gleckler1/'
-
-if m == 'crunchy':
- #basedir = '/export_backup/gleckler1'
- basedir = '/work_oceanonly/gleckler1'
+basedir = '/work/gleckler1'
 
 plots_outdir = parameter.outdir 
 
@@ -103,12 +96,18 @@ opathin = os.path.join(basedir, 'processed_data/obs/atm/mo/VAR/OBS/ac/VAR_OBS_00
 
 # MOD path
 #mpathin = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims_EXP/global/cmip5.MOD.EXP.r1i1p1.mo.Amon.VAR.ver-1.1980-2005.interpolated.linear.2.5x2.5.global.AC.nc'
-if exp in [ 'historical', 'amip']:
+if exp == 'historical':
+  syear = 1980
+  eyear = 2005
+  basedir = '/work/gleckler1'
+elif exp ==  'amip':
   syear = 1981
   eyear = 2005
+  basedir = '/work/gleckler1'
 elif exp == 'picontrol':
   syear = ''
   eyear = ''
+  basedir = '/work_oceanonly/gleckler1'
 mpathin = os.path.join(basedir, 'processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_{}01-{}12-clim.nc'.format(syear,eyear))
 
 print mpathin
