@@ -27,7 +27,7 @@ P.add_argument("--outdir",
                    type=str,
                    dest="outdir",
                    default="./test",
-                   help="output directory path")
+                   help="output directory path. The directory will be created automatically if not exist")
 P.add_argument("-d", "--debug",
                    type=bool,
                    dest="debug",
