@@ -106,8 +106,8 @@ if exp == 'historical':
   mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198001-200512-clim.nc'
 elif exp == 'amip':
   mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198101-200512-clim.nc'
-else:  ## TEMPORARY
-  mpathin = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims_EXP/global/cmip5.MOD.EXP.r1i1p1.mo.Amon.VAR.ver-1.1980-2005.interpolated.linear.2.5x2.5.global.AC.nc'
+elif exp == 'picontrol'
+  mpathin = '/work/gleckler1/processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_01-12-clim.nc'
 
 print mpathin
 
@@ -305,7 +305,7 @@ var_dic = {
      },
    }
 
-vars = var_dic.keys()
+vars = sorted(var_dic.keys())
 
 #vars = ['pr']
 #vars = ['prw','psl']
@@ -412,6 +412,8 @@ for var in vars:
   for l in lst:
     mod = string.split(l,'/')[-1].split('_')[1]
     if mod not in mods: mods.append(mod)
+
+  mods = sorted(mods)
 
   if debug:
     mods = mods[0:3] # FOR TEST -jwlee
