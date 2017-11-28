@@ -139,12 +139,12 @@ def plot_4panel(canvas,
 
   # Logos ---
   # PCMDI
-  logo2 = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png')
-  logo2.x = .1
-  logo2.y = .04
-  logo2.width = logo2.source_width
-  logo2.height = logo2.source_height
-  logo2.plot(canvas)
+  logo_PCMDI = vcs.utils.Logo('../../../../../share/pcmdi/PCMDILogo_200x65px_72dpi.png')
+  logo_PCMDI.x = .1
+  logo_PCMDI.y = .04
+  logo_PCMDI.width = logo_PCMDI.source_width
+  logo_PCMDI.height = logo_PCMDI.source_height
+  logo_PCMDI.plot(canvas)
 
   # New CDAT
   logo_CDAT = vcs.utils.Logo('../../../../../share/pcmdi/CDATLogo_200x70px_72dpi.png')
@@ -164,6 +164,9 @@ def plot_4panel(canvas,
   canvas.clear()
   canvas.removeobject(my_template)
   canvas.removeobject(plot_title)
+  del(logo_PCMDI)
+  del(logo_CDAT)
+
   for t in templates:
       canvas.removeobject(t)
   for t in txt:
