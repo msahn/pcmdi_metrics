@@ -103,11 +103,13 @@ opathin = os.path.join(basedir, 'processed_data/obs/atm/mo/VAR/OBS/ac/VAR_OBS_00
 
 # MOD path
 #mpathin = '/work/gleckler1/processed_data/metrics_package/interpolated_model_clims_EXP/global/cmip5.MOD.EXP.r1i1p1.mo.Amon.VAR.ver-1.1980-2005.interpolated.linear.2.5x2.5.global.AC.nc'
-if exp == 'historical':
-  mpathin = os.path.join(basedir, 'processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198101-200512-clim.nc')
-elif exp == 'amip':
+if exp in [ 'historical', 'amip']:
+  syear = 1981
+  eyear = 2005
   mpathin = os.path.join(basedir, 'processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_198101-200512-clim.nc')
 elif exp == 'picontrol':
+  syear = ''
+  eyear = ''
   mpathin = os.path.join(basedir, 'processed_data/cmip5clims_metrics_package-EXP/VAR_MOD_Amon_EXP_r1i1p1_01-12-clim.nc')
 
 print mpathin
@@ -536,7 +538,7 @@ for var in vars:
 
       time1 = time.time() # Time checker
 
-      plot_4panel(canvas, logo1, logo2,
+      plot_4panel(canvas, logo1, logo2, era, exp, syear, eyear,
                   var_dic,
                   var, var_long_name, units, season, 
                   mod, 

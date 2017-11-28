@@ -3,7 +3,7 @@ import vcs
 import time
 
 #===========================================================================================
-def plot_4panel(canvas, logo1, logo2,
+def plot_4panel(canvas, logo1, logo2, era, exp, syear, eyear,
                 var_dic,
                 var, var_long_name, units, season, model, s1, s2, s3, s4, output_file_name, option):
 #-------------------------------------------------------------------------------------------
@@ -47,7 +47,7 @@ def plot_4panel(canvas, logo1, logo2,
 
   plot_title.y = .935
   plot_title.height = 20
-  plot_title.string = '('+era.upper()+' '+exp+': 1980-2005)'
+  plot_title.string = '('+era.upper()+' '+exp+': '+str(syear)+'-'+str(eyear)+')'
   canvas.plot(plot_title)
 
   templates = []
