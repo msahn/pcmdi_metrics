@@ -525,12 +525,12 @@ for var in vars:
                   mod, 
                   fld[mod][season], obs[season], 
                   dif[mod][season], mmm_dif[season], 
-                  output_file_name,option)
+                  output_file_name, option)
 
       time2 = time.time() # Time checker
       timec = time2 - time1
       
       print 'plot', var, mod, season, timec
-      logfile.write('plot'+' '+var+' '+mod+' '+season+' '+str(timec)+'\n')
+      logfile.write('plot '+var+' '+mod+' '+season+' '+str(timec)+'\n')
 
 canvas.close()
