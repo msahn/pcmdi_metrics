@@ -309,7 +309,7 @@ var_dic = {
 vars = sorted(var_dic.keys())
 
 #vars = ['pr', 'prw']
-vars = ['psl']
+#vars = ['psl']
 #vars = ['rlut', 'rltcre', 'rstcre']
 #vars = ['tas', 'ta-200', 'ta-850']
 #vars = ['ua-200', 'ua-850', 'va-200', 'va-850']
