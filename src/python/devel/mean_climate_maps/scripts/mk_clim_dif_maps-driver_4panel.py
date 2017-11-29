@@ -50,8 +50,8 @@ def remove_annual_mean(ds, d):
 #----------------------------------------------------------------------------
 debug = parameter.debug
 
-OgridAsCommon = True
-#OgridAsCommon = False # In case if OBS has higher resolution than models AND all models already have been processed to have same grid
+#OgridAsCommon = True
+OgridAsCommon = False # In case if OBS has higher resolution than models AND all models already have been processed to have same grid
 
 #----------------------------------------------------------------------------
 option = parameter.option
@@ -355,6 +355,8 @@ for var in vars:
   #==============================================================================
   # Observation
   #------------------------------------------------------------------------------
+  print 'obs processing start'
+
   obsd = var_dic[var]['obsname'] 
 
   if 'level' in var_dic[var]:
@@ -402,6 +404,8 @@ for var in vars:
     if RemoveAnnualMean:
       obs[season] = remove_annual_mean(obs[season], do)
 
+  print 'obs processing end'
+
   #==============================================================================
   # Models
   #------------------------------------------------------------------------------
@@ -418,6 +422,7 @@ for var in vars:
     if mod not in mods: mods.append(mod)
 
   mods = sorted(mods)
+  print 'mods:', mods
 
   if debug:
     mods = mods[0:3] # FOR TEST -jwlee
@@ -433,12 +438,17 @@ for var in vars:
   #------------------------------------------------------------------------------
   # Calculate seasonal mean and its difference against obs from MMM and individual models 
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  print 'MMM start'
+
   for mod in mods:
     fld[mod] = {} # Model's climatology field
     dif[mod] = {} # Difference btw. model and obs
     mgrid[mod] = {} # Model's grid (dependent to model input file)
 
   for season in seasons:
+
+    print season
+
     mmm[season] = 0
 
     time1 = time.time() # Time checker
@@ -478,7 +488,8 @@ for var in vars:
           if OgridAsCommon:
             refgrid = ogrid
           else:
-            refgrid = mgrid[mod]
+            #refgrid = mgrid[mod]
+            refgrid = cdms2.createGaussianGrid(72, order="yx") # Common grid 2.5 x 2.5 degree resolution
 
       if mod == mods[0]:
         if OgridAsCommon:
@@ -489,6 +500,7 @@ for var in vars:
 
       # Seasonal climatology
       fld[mod][season] = pcmdi_metrics.pcmdi.seasonal_mean.compute(dm,season)
+      fld[mod][season].setGrid(dm.getGrid())
 
       # Zonal Mean Remove?
       if RemoveZonalMean:
@@ -502,7 +514,7 @@ for var in vars:
       fld_regrid = fld[mod][season].regrid(refgrid, regridTool='regrid2', mkCyclic=True)
 
       # Accumulate for MMM
-      mmm[season] = MV2.add(mmm[season], fld_regrid)
+      mmm[season] = MV2.add(fld_regrid, mmm[season])
 
       # Get difference field
       dif[mod][season] = MV2.subtract(fld_regrid, obs_season_regrid)
@@ -524,10 +536,11 @@ for var in vars:
   #------------------------------------------------------------------------------
   # Create 4 panel plots: model, obs, model-obs, mmm-obs
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  print 'plotting start'
   pout = plots_outdir + '/' + era + '/' + exp + '/' + odir + '/' + var
 
   if os.path.isdir(pout):
-    print 'output directory exists: {}'.font(pout)
+    print 'output directory exists: {}'.format(pout)
   else:
     os.makedirs(pout)
 
@@ -543,8 +556,8 @@ for var in vars:
                   var_dic,
                   var, var_long_name, units, season, 
                   mod, 
-                  fld[mod][season], obs[season], 
-                  dif[mod][season], mmm_dif[season], 
+                  fld[mod][season](latitude=(-90,90),longitude=(0,360)), obs[season](latitude=(-90,90),longitude=(0,360)),
+                  dif[mod][season](latitude=(-90,90),longitude=(0,360)), mmm_dif[season](latitude=(-90,90),longitude=(0,360)), 
                   output_file_name, option)
 
       time2 = time.time() # Time checker
