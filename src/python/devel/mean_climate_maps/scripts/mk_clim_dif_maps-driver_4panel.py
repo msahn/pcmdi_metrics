@@ -119,7 +119,7 @@ now = datetime.datetime.now()
 if debug:
   LogfileName = 'log.txt'
 else:
-  LogfileName = 'log_' + str(now.year) + '{0:0=2d}'.format(now.month) + '{0:0=2d}'.format(now.day) + '_' + '{0:0=2d}'.format(now.hour) + '{0:0=2d}'.format(now.minute) + '.txt'
+  LogfileName = 'log_'+exp+str(option)+'_'+ str(now.year) + '{0:0=2d}'.format(now.month) + '{0:0=2d}'.format(now.day) + '_' + '{0:0=2d}'.format(now.hour) + '{0:0=2d}'.format(now.minute) + '.txt'
 logfile = open(LogfileName, 'w')
 
 # Make output directory
@@ -308,8 +308,8 @@ var_dic = {
 
 vars = sorted(var_dic.keys())
 
-#vars = ['pr']
-#vars = ['prw','psl']
+#vars = ['pr', 'prw']
+vars = ['psl']
 #vars = ['rlut', 'rltcre', 'rstcre']
 #vars = ['tas', 'ta-200', 'ta-850']
 #vars = ['ua-200', 'ua-850', 'va-200', 'va-850']
@@ -342,6 +342,9 @@ execfile('../lib/taylor_colormaps_stretch.py')
 ##################################################################################
 print 'Loop start'
 for var in vars:
+
+  print var
+
   var_long_name = var_dic[var]['var_long_name']
 
   if RemoveZonalMean is True: var_long_name = var_long_name + ""
@@ -523,10 +526,10 @@ for var in vars:
   #- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   pout = plots_outdir + '/' + era + '/' + exp + '/' + odir + '/' + var
 
-  try:
+  if os.path.isdir(pout):
+    print 'output directory exists: {}'.font(pout)
+  else:
     os.makedirs(pout)
-  except:
-    pass
 
   for mod in mods:
     for season in seasons:
